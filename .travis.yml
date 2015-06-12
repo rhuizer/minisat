@@ -4,6 +4,8 @@ compiler:
     - clang
     - gcc
 
+env: MROOT=$TRAVIS_BUILD_DIR
+
 script:
     - make -C core rs
     - mv core/minisat_static minisat_core_static
