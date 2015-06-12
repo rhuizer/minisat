@@ -1,5 +1,5 @@
 /******************************************************************************************[Sort.h]
-MiniSat -- Copyright (c) 2003-2005, Niklas Een, Niklas Sorensson
+MiniSat -- Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -20,17 +20,16 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #ifndef Sort_h
 #define Sort_h
 
+#include "Vec.h"
 
 //=================================================================================================
+// Some sorting algorithms for vec's
 
 
 template<class T>
 struct LessThan_default {
     bool operator () (T x, T y) { return x < y; }
 };
-
-
-//=================================================================================================
 
 
 template <class T, class LessThan>
@@ -51,15 +50,14 @@ void selectionSort(T* array, int size, LessThan lt)
 template <class T> static inline void selectionSort(T* array, int size) {
     selectionSort(array, size, LessThan_default<T>()); }
 
-
 template <class T, class LessThan>
-void sort(T* array, int size, LessThan lt, double& seed)
+void sort(T* array, int size, LessThan lt)
 {
     if (size <= 15)
         selectionSort(array, size, lt);
 
     else{
-        T           pivot = array[irand(seed, size)];
+        T           pivot = array[size / 2];
         T           tmp;
         int         i = -1;
         int         j = size;
@@ -73,38 +71,12 @@ void sort(T* array, int size, LessThan lt, double& seed)
             tmp = array[i]; array[i] = array[j]; array[j] = tmp;
         }
 
-        sort(array    , i     , lt, seed);
-        sort(&array[i], size-i, lt, seed);
+        sort(array    , i     , lt);
+        sort(&array[i], size-i, lt);
     }
 }
-template <class T, class LessThan> void sort(T* array, int size, LessThan lt) {
-    double  seed = 91648253; sort(array, size, lt, seed); }
 template <class T> static inline void sort(T* array, int size) {
     sort(array, size, LessThan_default<T>()); }
-
-
-template <class T, class LessThan>
-void sortUnique(T* array, int& size, LessThan lt)
-{
-    int         i, j;
-    T           last;
-
-    if (size == 0) return;
-
-    sort(array, size, lt);
-
-    i    = 1;
-    last = array[0];
-    for (j = 1; j < size; j++){
-        if (lt(last, array[j])){
-            last = array[i] = array[j];
-            i++; }
-    }
-
-    size = i;
-}
-template <class T> static inline void sortUnique(T* array, int& size) {
-    sortUnique(array, size, LessThan_default<T>()); }
 
 
 //=================================================================================================
@@ -115,16 +87,6 @@ template <class T, class LessThan> void sort(vec<T>& v, LessThan lt) {
     sort((T*)v, v.size(), lt); }
 template <class T> void sort(vec<T>& v) {
     sort(v, LessThan_default<T>()); }
-
-
-template <class T, class LessThan> void sortUnique(vec<T>& v, LessThan lt) {
-    int     size = v.size();
-    T*      data = v.release();
-    sortUnique(data, size, lt);
-    v.~vec<T>();
-    new (&v) vec<T>(data, size); }
-template <class T> void sortUnique(vec<T>& v) {
-    sortUnique(v, LessThan_default<T>()); }
 
 
 //=================================================================================================
