@@ -1,4 +1,4 @@
-/**************************************************************************************************
+/**************************************************************************************[VarOrder.h]
 MiniSat -- Copyright (c) 2003-2005, Niklas Een, Niklas Sorensson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
@@ -22,6 +22,7 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 
 #include "SolverTypes.h"
 #include "Heap.h"
+
 
 //=================================================================================================
 
@@ -74,7 +75,7 @@ void VarOrder::undo(Var x)
 Var VarOrder::select(double random_var_freq)
 {
     // Random decision:
-    if (drand(random_seed) < random_var_freq){
+    if (drand(random_seed) < random_var_freq && !heap.empty()){
         Var next = irand(random_seed,assigns.size());
         if (toLbool(assigns[next]) == l_Undef)
             return next;
@@ -89,6 +90,7 @@ Var VarOrder::select(double random_var_freq)
 
     return var_Undef;
 }
+
 
 //=================================================================================================
 #endif

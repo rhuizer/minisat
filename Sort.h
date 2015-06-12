@@ -1,4 +1,4 @@
-/**************************************************************************************************
+/******************************************************************************************[Sort.h]
 MiniSat -- Copyright (c) 2003-2005, Niklas Een, Niklas Sorensson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
@@ -17,11 +17,8 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **************************************************************************************************/
 
-
 #ifndef Sort_h
 #define Sort_h
-
-//#include <cstdlib>
 
 
 //=================================================================================================

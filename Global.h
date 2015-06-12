@@ -1,4 +1,4 @@
-/**************************************************************************************************
+/****************************************************************************************[Global.h]
 MiniSat -- Copyright (c) 2003-2005, Niklas Een, Niklas Sorensson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
@@ -34,13 +34,20 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 
 
 #ifdef _MSC_VER
-typedef __int64     int64;
+typedef INT64              int64;
+typedef UINT64             uint64;
+typedef INT_PTR            intp;
+typedef UINT_PTR           uintp;
 #define I64_fmt "I64d"
 #else
-typedef long long   int64;
+typedef long long          int64;
+typedef unsigned long long uint64;
+typedef __PTRDIFF_TYPE__   intp;
+typedef unsigned __PTRDIFF_TYPE__ uintp;
 #define I64_fmt "lld"
 #endif
-typedef const char  cchar;
+typedef unsigned char uchar;
+typedef const char    cchar;
 
 
 template<class T> static inline T min(T x, T y) { return (x < y) ? x : y; }
@@ -86,21 +93,51 @@ static inline int irand(double& seed, int size) {
 
 
 //=================================================================================================
-// Time:
+// Time and Memory:
 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #ifdef _MSC_VER
+
 #include <ctime>
+
 static inline double cpuTime(void) {
     return (double)clock() / CLOCKS_PER_SEC; }
+
+static inline int64 memUsed() {
+    return 0; }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #else
+
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <unistd.h>
+
 static inline double cpuTime(void) {
     struct rusage ru;
     getrusage(RUSAGE_SELF, &ru);
     return (double)ru.ru_utime.tv_sec + (double)ru.ru_utime.tv_usec / 1000000; }
+
+static inline int memReadStat(int field)
+{
+    char    name[256];
+    pid_t pid = getpid();
+    sprintf(name, "/proc/%d/statm", pid);
+    FILE*   in = fopen(name, "rb");
+    if (in == NULL) return 0;
+    int     value;
+    for (; field >= 0; field--)
+        fscanf(in, "%d", &value);
+    fclose(in);
+    return value;
+}
+
+static inline int64 memUsed() { return (int64)memReadStat(0) * (int64)getpagesize(); }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #endif
+
 
 
 //=================================================================================================
@@ -142,6 +179,7 @@ public:
     void     growTo (int size);
     void     growTo (int size, const T& pad);
     void     clear  (bool dealloc = false);
+    void     capacity (int size) { grow(size); }
 
     // Stack interface:
     void     push  (void)              { if (sz == cap) grow(sz+1); new (&data[sz]) T()    ; sz++; }
@@ -166,7 +204,7 @@ template<class T>
 void vec<T>::grow(int min_cap) {
     if (min_cap <= cap) return;
     if (cap == 0) cap = (min_cap >= 2) ? min_cap : 2;
-    else          do cap = (cap*3 + 1)>>1; while (cap < min_cap);
+    else          do cap = (cap*3+1) >> 1; while (cap < min_cap);
     data = xrealloc(data, cap); }
 
 template<class T>

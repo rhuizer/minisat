@@ -1,6 +1,9 @@
 ##
-##  Makefile for Standard, Profile, Debug, and Release version of MiniSat
+##  Makefile for Standard, Profile, Debug, Release, and Release-static versions of MiniSat
 ##
+##    eg: "make rs" for a statically linked release version.
+##        "make d"  for a debug version (no optimizations).
+##        "make"    for the standard version (optimized, but with debug information and assertions active)
 
 CSRCS     = $(wildcard *.C)
 CHDRS     = $(wildcard *.h)
@@ -13,8 +16,8 @@ RCOBJS    = $(addsuffix r,  $(COBJS))
 EXEC      = minisat
 
 CXX       = g++
-CFLAGS    = -Wall
-COPTIMIZE = -O3 -fomit-frame-pointer
+CFLAGS    = -Wall -ffloat-store
+COPTIMIZE = -O3
 
 
 .PHONY : s p d r build clean depend
@@ -73,7 +76,7 @@ $(EXEC)_static: $(RCOBJS)
 
 ## Make dependencies
 depend:	depend.mak
-depend.mak:	$(CSRCS) $(CHDRS)
+depend.mak: $(CSRCS) $(CHDRS)
 	@echo Making dependencies ...
 	@$(CXX) -MM $(CSRCS) > depend.mak
 	@cp depend.mak /tmp/depend.mak.tmp
