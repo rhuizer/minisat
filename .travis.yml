@@ -4,13 +4,19 @@ compiler:
     - clang
     - gcc
 
-script: make rs
+script:
+    - cd core
+    - make rs
+    - mv minisat_static ../
+    - cd ../simp
+    - make rs
+    - mv minisat_static ../minisat_simp_static
 
 deploy:
     provider: releases
     api_key:
         secure: pjui3hXNm9uulRtJhAQMVcOpxQ02xapYBZO7IAKMNLa13deq0kdYEYypVN1aKig3S33xnn8vp/BeQzJoP7brGgW+R8DkPyjtZa25YdcspAvMSsIbEECQh9vq5tFlrsdZpvwdX4ggo96kJSzAEhbkODN+blwuM8vOOlBG6KefZ9oKJqUpWcmFXDmDAEmXH+rP1QYmLFmcFmL7HSippp+aLH85BOBVNaDfPf1P1rm+krHCWG0apPCN4nGve6tkhItMWbt5+lB0wgEXJkD6UuU9ECYYOGpy2oIsx0ziveibUU1TX2Efa5CYoA+W6+EPAunGC63h90aUf3QCpQjMRk1z65NKkngP6cnc2IWIsgmrhtSRuxKpeu17w3vLsD2KqEPcJlLsbQt0YOuNbdIcxYhjgUw3pFiJaJb0ZXsND2L9fUlcajDZM595/MxdpbVyMwE7+JQOhW0CtDU0wJd7HpfG+brd7jiYmc1JcA+1bGW0W/uC1o/XpyR0EMCOcfMqBWlEdrFEktkBQSvZyC/oBS248F3c51SXx/BsaRyy2AB5vHFTea4c1LgE5Ns6GyqI4cp2LTJGef5OdbP0IDptIhr/5KXCzD+YJkby1cT2xqbqf7CU4RyX+NbkIYAHmTn8Mh6EtxXeD6s0pJpRh9UYCo2haeRzo09kFK9cUuWx5QgKos8=
     file: minisat_static
-    skip_cleanup: true
+    file: minisat_simp_static
     on:
         tags: true
